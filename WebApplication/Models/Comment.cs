@@ -11,7 +11,7 @@ namespace WebApplication.Models
         public int Id { get; set; }
         [Column("content")]
         public string Content { get; set; }
-        [Column("authoru_name")]
+        [Column("author_name")]
         public string AuthorName { get; set; }
         [Column("author_email")]
         public string AuthorEmail { get; set; }
@@ -20,10 +20,7 @@ namespace WebApplication.Models
         [Column("created_at")]
         public DateTime CreatedAt { get; set; }
 
-        public Comment ReturnComment()
-        {
-            return new Comment();
-        }
+       
     }
     
     

@@ -91,10 +91,6 @@ C:\DATA\repositories\WebApi\WebApplication\bin\Debug\net5.0\Humanizer.dll
 C:\DATA\repositories\WebApi\WebApplication\bin\Debug\net5.0\K4os.Compression.LZ4.dll
 C:\DATA\repositories\WebApi\WebApplication\bin\Debug\net5.0\K4os.Compression.LZ4.Streams.dll
 C:\DATA\repositories\WebApi\WebApplication\bin\Debug\net5.0\K4os.Hash.xxHash.dll
-C:\DATA\repositories\WebApi\WebApplication\bin\Debug\net5.0\System.Net.Http.Formatting.dll
-C:\DATA\repositories\WebApi\WebApplication\bin\Debug\net5.0\System.Web.Http.dll
-C:\DATA\repositories\WebApi\WebApplication\bin\Debug\net5.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
-C:\DATA\repositories\WebApi\WebApplication\bin\Debug\net5.0\Microsoft.AspNetCore.Authentication.OpenIdConnect.dll
 C:\DATA\repositories\WebApi\WebApplication\bin\Debug\net5.0\Microsoft.Data.SqlClient.dll
 C:\DATA\repositories\WebApi\WebApplication\bin\Debug\net5.0\Microsoft.EntityFrameworkCore.dll
 C:\DATA\repositories\WebApi\WebApplication\bin\Debug\net5.0\Microsoft.EntityFrameworkCore.Abstractions.dll
@@ -113,8 +109,6 @@ C:\DATA\repositories\WebApi\WebApplication\bin\Debug\net5.0\MySql.Data.dll
 C:\DATA\repositories\WebApi\WebApplication\bin\Debug\net5.0\Ubiety.Dns.Core.dll
 C:\DATA\repositories\WebApi\WebApplication\bin\Debug\net5.0\Zstandard.Net.dll
 C:\DATA\repositories\WebApi\WebApplication\bin\Debug\net5.0\MySqlConnector.dll
-C:\DATA\repositories\WebApi\WebApplication\bin\Debug\net5.0\Newtonsoft.Json.dll
-C:\DATA\repositories\WebApi\WebApplication\bin\Debug\net5.0\Newtonsoft.Json.Bson.dll
 C:\DATA\repositories\WebApi\WebApplication\bin\Debug\net5.0\Pomelo.EntityFrameworkCore.MySql.dll
 C:\DATA\repositories\WebApi\WebApplication\bin\Debug\net5.0\Renci.SshNet.dll
 C:\DATA\repositories\WebApi\WebApplication\bin\Debug\net5.0\SshNet.Security.Cryptography.dll
@@ -154,3 +148,4 @@ C:\DATA\repositories\WebApi\WebApplication\obj\Debug\net5.0\WebApplication.dll
 C:\DATA\repositories\WebApi\WebApplication\obj\Debug\net5.0\ref\WebApplication.dll
 C:\DATA\repositories\WebApi\WebApplication\obj\Debug\net5.0\WebApplication.pdb
 C:\DATA\repositories\WebApi\WebApplication\obj\Debug\net5.0\WebApplication.genruntimeconfig.cache
+C:\DATA\repositories\WebApi\WebApplication\bin\Debug\net5.0\Newtonsoft.Json.dll

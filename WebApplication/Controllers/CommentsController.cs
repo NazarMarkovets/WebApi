@@ -20,14 +20,11 @@ namespace WebApplication.Controllers
         
         private static DbFactory connectionFactory = new DbFactory();
         private static List<Comment> commentsList = new List<Comment>();
-        private static Comment _comment= new Comment();
-        
         
         
         [HttpGet] //api/Comments
         public ActionResult<List<Comment>> GetAll()
         {
-
             commentsList.Clear();
             var mysqlconnection = connectionFactory.GetConnection();
 
@@ -53,13 +50,17 @@ namespace WebApplication.Controllers
                         };
                         commentsList.Add(item);
                     }
-                    mysqlconnection.Close();
+
                 }
 
             }
             catch
             {
                 return BadRequest();
+            }
+            finally
+            {
+                    mysqlconnection.Close();
             }
             
             return commentsList;
@@ -67,40 +68,14 @@ namespace WebApplication.Controllers
         
         [Microsoft.AspNetCore.Mvc.HttpGet("{article_id}")] //api/Comments/{id}
         public ActionResult<Comment> GetCommentById(int article_id)
-        {   
-            
-            var searchResult = _comment.ReturnComment();
+        {
+            var item = new Comment();
+            //var searchResult = _comment.ReturnComment();
             var mysqlconnection = connectionFactory.GetConnection();
-
-            try
-            {
-                mysqlconnection.Open();
-                string sqlQuery =
-                    "select id,content,author_name,author_email,created_at from everlastingcomments.comment where article_id="+article_id;
-
-                MySqlCommand sqlCommand = new MySqlCommand(sqlQuery, mysqlconnection);
-
-                MySqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
-                if (sqlDataReader.HasRows)
-                {
-                    while (sqlDataReader.Read())
-                    {
-                        searchResult.Id = sqlDataReader.GetInt32(0);
-                        searchResult.Content = sqlDataReader.GetString(1);
-                        searchResult.AuthorName = sqlDataReader.GetString(2);
-                        searchResult.AuthorEmail = sqlDataReader.GetString(3);
-                        searchResult.CreatedAt = sqlDataReader.GetDateTime(4);
-                           
-                    }
-                    mysqlconnection.Close();
-                }
-
-            }
-            catch
-            {
-                return BadRequest();
-            }
-            return searchResult;
+            
+            //todo
+            
+            return item;
         }
 
         #region GoodGetIdRequest
