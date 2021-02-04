@@ -1,0 +1,7 @@
+{
+   "server":"server=localhost;",
+   "port":"port=3306;",
+   "database":"database=everlastingblog;",
+   "user":"userid=root;",
+   "pass":"password=warKrawT228787898787899;"
+}

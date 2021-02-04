@@ -9,7 +9,7 @@ namespace WebApplication.Repository
     public class CommentsRepository
     {
         private DbFactory _factory = new DbFactory();
-        public List<Comment> FindById(int article_id)
+        public List<Comment> FindCommentsByArticleId(int article_id)
         {
             var commentsList = new List<Comment>();
             var connection = _factory.GetConnection();

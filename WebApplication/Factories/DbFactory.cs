@@ -13,7 +13,7 @@ namespace WebApplication
         {
             if (currentConnection == null)
             {
-                _connectionString = @"server=localhost;port=3306;database=everlastingblog;userid=root;password=warKrawT228787898787899";
+                _connectionString = @"server=localhost;port=3306;database=everlastingblog;userid=root;password=warKrawT228787898787899;";
                 var newConnection = new MySqlConnection(_connectionString);
                 currentConnection = newConnection;
                 return currentConnection;
@@ -21,6 +21,7 @@ namespace WebApplication
 
             return currentConnection;
         }
+        
         
         public MySqlConnection GetConnection(string type, string connectionString)
         {
