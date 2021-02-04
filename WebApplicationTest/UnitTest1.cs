@@ -1,8 +1,11 @@
+using System;
 using System.Data;
 using System.Dynamic;
+using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using WebApplication;
 using WebApplication.Models;
 using WebApplication.Props;
@@ -29,7 +32,7 @@ namespace WebApplicationTest
 
         }
 
-        [TestMethod]
+        [TestMethod("Check status from connection factory. IS it closed?")]
         public void Get_DB_Connection()
         {
             string expectedStatus = "Closed";
@@ -38,7 +41,7 @@ namespace WebApplicationTest
             Assert.AreEqual(expectedStatus, actualStatus);
         }
 
-        [TestMethod]
+        [TestMethod ("Does connection factory always return the same object")]
         public void Factory_returns_the_same_connection_obj()
         {
             var first = _dbFactory.GetConnection();
@@ -46,16 +49,52 @@ namespace WebApplicationTest
             Assert.AreEqual(first,second);
         }
 
-        [TestMethod("Get json properties")]
-        public void Inject_props_json_to_connectionString()
+        [TestMethod("Get json properties for object")]
+        public void GetPropertiesForConnectionFromJson()
         {
-            var json = _propertiesFactory.ReadProperties();
+            var json = _propertiesFactory.GetPropertiesForConnection();
             
             Assert.IsNotNull(json);
             
         }
 
-        [TestMethod]
+
+        [TestMethod("JSON is created correctly")]
+        public void Create_json_if_not_exists()
+        {
+            string jsonfileLocation = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), 
+                "connectionProperties.json");
+            _propertiesFactory.CreatePropertiesIfNotExists();
+            if (!File.Exists(jsonfileLocation))
+            {
+                throw new FileNotFoundException();
+            }
+            else
+            {
+                Properties expectedProperties = new Properties(
+                    "server=localhost;",
+                    "port=3306;",
+                    "database=everlastingblog;",
+                    "userid=root;", 
+                    "password=warKrawT228787898787899;");
+                Properties actualProperties = new Properties();
+                //string expected = JsonConvert.SerializeObject(templateForJson);
+                using (StreamReader file = File.OpenText(jsonfileLocation))
+                {
+                    JsonSerializer serializer = new JsonSerializer();
+                    actualProperties = (Properties)serializer.Deserialize(file, typeof(Properties));
+                    
+                }
+                
+                Assert.IsTrue(expectedProperties.server == actualProperties.server && 
+                              expectedProperties.port == actualProperties.port &&
+                              expectedProperties.database == actualProperties.database &&
+                              expectedProperties.userid == actualProperties.userid &&
+                              expectedProperties.password == actualProperties.password);
+            }
+            
+        }
+        [TestMethod("Connection string is built correct")]
         public void Build_Connection_String_Correct()
         {
             string _connectionString = @"server=localhost;port=3306;database=everlastingblog;userid=root;password=warKrawT228787898787899;";

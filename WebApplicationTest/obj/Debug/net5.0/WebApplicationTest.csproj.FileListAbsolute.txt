@@ -146,3 +146,4 @@ C:\DATA\repositories\WebApi\WebApplicationTest\obj\Debug\net5.0\WebApplicationTe
 C:\DATA\repositories\WebApi\WebApplicationTest\obj\Debug\net5.0\ref\WebApplicationTest.dll
 C:\DATA\repositories\WebApi\WebApplicationTest\obj\Debug\net5.0\WebApplicationTest.pdb
 C:\DATA\repositories\WebApi\WebApplicationTest\obj\Debug\net5.0\WebApplicationTest.genruntimeconfig.cache
+C:\DATA\repositories\WebApi\WebApplicationTest\bin\Debug\net5.0\Properties\connectionProperties.json

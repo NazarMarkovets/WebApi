@@ -149,3 +149,4 @@ C:\DATA\repositories\WebApi\WebApplication\obj\Debug\net5.0\ref\WebApplication.d
 C:\DATA\repositories\WebApi\WebApplication\obj\Debug\net5.0\WebApplication.pdb
 C:\DATA\repositories\WebApi\WebApplication\obj\Debug\net5.0\WebApplication.genruntimeconfig.cache
 C:\DATA\repositories\WebApi\WebApplication\bin\Debug\net5.0\Newtonsoft.Json.dll
+C:\DATA\repositories\WebApi\WebApplication\bin\Debug\net5.0\Properties\connectionProperties.json
