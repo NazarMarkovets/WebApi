@@ -4,9 +4,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using WebApplication.Factories;
 using WebApplication.Props;
-using WebApplication.Repository;
 using MySqlCommand = MySql.Data.MySqlClient.MySqlCommand;
-using MySqlConnection = MySql.Data.MySqlClient.MySqlConnection;
 
 namespace WebApplicationTest
 {
@@ -14,17 +12,17 @@ namespace WebApplicationTest
     [TestClass]
     public class WebApplicationTest
     {
-        private CommentsRepository CommentRepository { get; set; }
-        private DbFactory _dbFactory = new DbFactory();
-        private Properties Properties { get; set; }
+        //private Properties _properties;
+        //private CommentsRepository _commentRepository;
+        private DbFactory _dbFactory = new();
         private PropertiesFactory _propertiesFactory;
         
         [TestInitialize]
         public void TestInitialization()
         {
-            CommentRepository = new CommentsRepository();
+            //_commentRepository = new CommentsRepository();
+            //_properties = new Properties();
             _dbFactory = new DbFactory();
-            Properties = new Properties();
             _propertiesFactory = new PropertiesFactory();
         }
 
@@ -73,15 +71,13 @@ namespace WebApplicationTest
                     "database=everlastingblog;",
                     "userid=root;", 
                     "password=warKrawT228787898787899;");
-                Properties actualProperties = new Properties();
-                //string expected = JsonConvert.SerializeObject(templateForJson);
+                Properties actualProperties;
                 using (StreamReader file = File.OpenText(jsonfileLocation))
                 {
                     JsonSerializer serializer = new JsonSerializer();
                     actualProperties = (Properties)serializer.Deserialize(file, typeof(Properties));
                     
                 }
-                
                 Assert.IsTrue(expectedProperties.Server == actualProperties.Server && 
                               expectedProperties.Port == actualProperties.Port &&
                               expectedProperties.Database == actualProperties.Database &&

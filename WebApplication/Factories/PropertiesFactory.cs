@@ -18,6 +18,7 @@ namespace WebApplication.Factories
         {
             if (Properties is null)
             {
+                CreatePropertiesIfNotExists();
                 using (StreamReader r = new StreamReader(_jsonfileLocation))
                 {
                     string json = r.ReadToEnd();
