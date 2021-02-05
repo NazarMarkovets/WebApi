@@ -1,10 +1,16 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MySqlConnector;
 using Newtonsoft.Json;
 using WebApplication.Factories;
+using WebApplication.Models;
 using WebApplication.Props;
 using WebApplication.Repository;
+using MySql.Data.MySqlClient;
+using MySqlCommand = MySql.Data.MySqlClient.MySqlCommand;
+using MySqlConnection = MySql.Data.MySqlClient.MySqlConnection;
 
 namespace WebApplicationTest
 {
@@ -12,11 +18,11 @@ namespace WebApplicationTest
     [TestClass]
     public class WebApplicationTest
     {
-        public CommentsRepository CommentRepository { get; private set; }
-        private DbFactory _dbFactory;
-        public Properties Properties { get; private set; }
+        private CommentsRepository CommentRepository { get; set; }
+        private DbFactory _dbFactory = new DbFactory();
+        private Properties Properties { get; set; }
         private PropertiesFactory _propertiesFactory;
-         
+        
         [TestInitialize]
         public void TestInitialization()
         {
@@ -24,7 +30,6 @@ namespace WebApplicationTest
             _dbFactory = new DbFactory();
             Properties = new Properties();
             _propertiesFactory = new PropertiesFactory();
-
         }
 
         [TestMethod("Check status from connection factory. IS it closed?")]
@@ -96,6 +101,65 @@ namespace WebApplicationTest
             var get =_propertiesFactory.BuildConnectionString();
             Assert.IsNotNull(get);
             Assert.AreEqual(_connectionString, get);
+        }
+
+        [TestMethod("Can read data from db")]
+        public void GetDataFromDb()
+        {
+            var connectionString = @"server=localhost;port=3306;database=everlastingblog;userid=root;password=warKrawT228787898787899;";
+            var commentsList = new List<Comment>();
+
+            var testConn = _dbFactory.GetConnection();
+            testConn.Open();
+            var testCommand = new MySqlCommand("lkdfjdsjf", testConn); //todo убрать using Connection 
+            using (var sqlConnection = new MySqlConnection(connectionString))
+            {
+                sqlConnection.Open();
+                const string query = "select id,content, author_name, author_email,article_id,created_at from everlastingcomments.comment";
+                var command = new MySqlCommand(query, sqlConnection);
+                var sqlDataReader = command.ExecuteReader();
+                if (sqlDataReader.HasRows)
+                {
+                    while (sqlDataReader.Read())
+                    {
+                        var item = new Comment
+                        {
+                            Id = sqlDataReader.GetInt32(0),
+                            Content = sqlDataReader.GetString(1),
+                            AuthorName = sqlDataReader.GetString(2),
+                            AuthorEmail = sqlDataReader.GetString(3),
+                            ArticleId = sqlDataReader.GetInt32(4),
+                            CreatedAt = sqlDataReader.GetDateTime(5)
+                        };
+                        commentsList.Add(item);
+                    }
+                    
+                    Assert.IsNotNull(commentsList);
+                    sqlConnection.Close();
+                    // sqlConnection.Dispose();
+                }
+                
+                else
+                {
+                    sqlConnection.Close();
+                    // sqlConnection.Dispose();
+                    sqlConnection.Open();
+                    var sqlTransaction = sqlConnection.BeginTransaction();
+                    var sqlCommand = sqlConnection.CreateCommand();
+                    sqlCommand.Transaction = sqlTransaction;
+                    
+                    sqlCommand.CommandText = "insert into everlastingcomments.comment "+
+                                             "values(null, 'breaking news', 'Jonny', " +
+                                             "concat(lpad(conv(floor(rand()*pow(36,8)), 10, 36), 8, 0),'gmail.com'), 1, null);";
+                    sqlCommand.ExecuteNonQuery();
+                    sqlTransaction.Rollback();
+                    sqlConnection.Close();
+                }
+                
+            }
+            
+            
+
         }
     }
 }

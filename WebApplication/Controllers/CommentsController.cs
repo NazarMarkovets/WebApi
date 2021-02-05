@@ -140,7 +140,7 @@ namespace WebApplication.Controllers
             sqlCommand.Connection = mySqlConnection;
            
            //sqlCommand.CommandText = "insert into author values ('{0}','{1}')";
-           sqlCommand.CommandText = "INSERT INTO author VALUES ('')";
+           sqlCommand.CommandText = "insert into everlastingcomments.comment values(null, 'breaking news', 'Jonny', 'jonny1@gmail.com', 1, null);";
            try
             {
                 mySqlConnection.Open();
