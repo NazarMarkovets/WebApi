@@ -1,33 +1,31 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Dynamic;
 using System.IO;
 using Newtonsoft.Json;
 using WebApplication.Props;
 
-namespace WebApplication
+namespace WebApplication.Factories
 {
     public class PropertiesFactory
     {
-        private Properties _properties { get; set; }
+        private Properties Properties { get; set; }
          //path: C:\Users\nazar\AppData\Roaming\connectionProperties.json
-        private string jsonfileLocation = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), 
+        private string _jsonfileLocation = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), 
             "connectionProperties.json");
 
         
         //Get properties from json to fill properties object
         public Properties GetPropertiesForConnection()
         {
-            if (_properties is null)
+            if (Properties is null)
             {
-                using (StreamReader r = new StreamReader(jsonfileLocation))
+                using (StreamReader r = new StreamReader(_jsonfileLocation))
                 {
                     string json = r.ReadToEnd();
-                    _properties = JsonConvert.DeserializeObject<Properties>(json);
+                    Properties = JsonConvert.DeserializeObject<Properties>(json);
                 }
-                return _properties;
+                return Properties;
             }
-            return _properties;
+            return Properties;
         }
         
         //Create json not exists
@@ -41,20 +39,20 @@ namespace WebApplication
                 "userid=root;", 
                 "password=warKrawT228787898787899;");
             string stringjson = JsonConvert.SerializeObject(templateForJson);
-            if (File.Exists(jsonfileLocation))
+            if (File.Exists(_jsonfileLocation))
             {
-                File.Delete(jsonfileLocation);
-                using (var streamWriter = new StreamWriter(jsonfileLocation, true))
+                File.Delete(_jsonfileLocation);
+                using (var streamWriter = new StreamWriter(_jsonfileLocation, true))
                 {
-                    streamWriter.WriteLine(stringjson.ToString());
+                    streamWriter.WriteLine(stringjson);
                     streamWriter.Close();
                 }
             }
-            else if (!File.Exists(jsonfileLocation))
+            else if (!File.Exists(_jsonfileLocation))
             {
-                using (var streamWriter = new StreamWriter(jsonfileLocation, true))
+                using (var streamWriter = new StreamWriter(_jsonfileLocation, true))
                 {
-                    streamWriter.WriteLine(stringjson.ToString());
+                    streamWriter.WriteLine(stringjson);
                     streamWriter.Close();
                 }
                 
@@ -64,15 +62,15 @@ namespace WebApplication
         //Configurate the finish connection string for DbFactory
         public string BuildConnectionString()
         {
-            if (_properties is null)
+            if (Properties is null)
             {
                 var properties = GetPropertiesForConnection();
-                var builtConnectionString = properties.server+properties.port+properties.database+properties.userid+properties.password;
+                var builtConnectionString = properties.Server+properties.Port+properties.Database+properties.Userid+properties.Password;
                 return builtConnectionString;
             }
             else
             {
-                var builtConnectionString = _properties.server + _properties.port + _properties.database + _properties.userid + _properties.password;
+                var builtConnectionString = Properties.Server + Properties.Port + Properties.Database + Properties.Userid + Properties.Password;
                 return builtConnectionString;
             }
         }

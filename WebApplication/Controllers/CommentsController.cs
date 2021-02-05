@@ -1,14 +1,8 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using MySql.Data.MySqlClient;
+using WebApplication.Factories;
 using WebApplication.Models;
 
 namespace WebApplication.Controllers
@@ -66,12 +60,12 @@ namespace WebApplication.Controllers
             return commentsList;
         }
         
-        [Microsoft.AspNetCore.Mvc.HttpGet("{article_id}")] //api/Comments/{id}
-        public ActionResult<Comment> GetCommentById(int article_id)
+        [HttpGet("{article_id}")] //api/Comments/{id}
+        public ActionResult<Comment> GetCommentById(int articleId)
         {
             var item = new Comment();
             //var searchResult = _comment.ReturnComment();
-            var mysqlconnection = connectionFactory.GetConnection();
+            connectionFactory.GetConnection();
             
             //todo
             
@@ -126,17 +120,17 @@ namespace WebApplication.Controllers
 
         #endregion
 
-        [Microsoft.AspNetCore.Mvc.HttpPost]
-        public void Post([Microsoft.AspNetCore.Mvc.FromBody]string name)
+        [HttpPost]
+        public void Post([FromBody]string name)
         {
  
             Author author = new Author();
-            author.id = 958;
-            author.first_name = name;
-            author.last_name = name+"Koval";
-            author.email = name+"newemail";
-            author.password = name+"newpassword";
-            author.username = name+"newusername";
+            author.Id = 958;
+            author.FirstName = name;
+            author.LastName = name+"Koval";
+            author.Email = name+"newemail";
+            author.Password = name+"newpassword";
+            author.Username = name+"newusername";
 
             //using ADO.NET technology - Status OK
             
@@ -145,7 +139,7 @@ namespace WebApplication.Controllers
             MySqlCommand sqlCommand = new MySqlCommand();
             sqlCommand.Connection = mySqlConnection;
            
-           sqlCommand.CommandText = $"insert into author values ('{0}','{1}')";
+           //sqlCommand.CommandText = "insert into author values ('{0}','{1}')";
            sqlCommand.CommandText = "INSERT INTO author VALUES ('')";
            try
             {

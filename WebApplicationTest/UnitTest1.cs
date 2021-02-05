@@ -1,13 +1,8 @@
 using System;
-using System.Data;
-using System.Dynamic;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using WebApplication;
-using WebApplication.Models;
+using WebApplication.Factories;
 using WebApplication.Props;
 using WebApplication.Repository;
 
@@ -17,17 +12,17 @@ namespace WebApplicationTest
     [TestClass]
     public class WebApplicationTest
     {
-        private CommentsRepository _commentsRepository;
+        public CommentsRepository CommentRepository { get; private set; }
         private DbFactory _dbFactory;
-        private Properties _properties;
+        public Properties Properties { get; private set; }
         private PropertiesFactory _propertiesFactory;
          
         [TestInitialize]
         public void TestInitialization()
         {
-            _commentsRepository = new CommentsRepository();
+            CommentRepository = new CommentsRepository();
             _dbFactory = new DbFactory();
-            _properties = new Properties();
+            Properties = new Properties();
             _propertiesFactory = new PropertiesFactory();
 
         }
@@ -86,11 +81,11 @@ namespace WebApplicationTest
                     
                 }
                 
-                Assert.IsTrue(expectedProperties.server == actualProperties.server && 
-                              expectedProperties.port == actualProperties.port &&
-                              expectedProperties.database == actualProperties.database &&
-                              expectedProperties.userid == actualProperties.userid &&
-                              expectedProperties.password == actualProperties.password);
+                Assert.IsTrue(expectedProperties.Server == actualProperties.Server && 
+                              expectedProperties.Port == actualProperties.Port &&
+                              expectedProperties.Database == actualProperties.Database &&
+                              expectedProperties.Userid == actualProperties.Userid &&
+                              expectedProperties.Password == actualProperties.Password);
             }
             
         }

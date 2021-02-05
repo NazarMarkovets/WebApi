@@ -1,42 +1,44 @@
 ﻿using System;
 using MySql.Data.MySqlClient;
 
-
-namespace WebApplication
+namespace WebApplication.Factories
 {
     public class DbFactory
     {
-        private static MySqlConnection currentConnection; 
-        public static string _connectionString { get; set; }
+        private static MySqlConnection _currentConnection;
+        private static PropertiesFactory _propertiesFactory = new();
+        public static string ConnectionString { get; set; }
         
         public MySqlConnection GetConnection()
         {
-            if (currentConnection == null)
+            if (_currentConnection == null)
             {
-                _connectionString = @"server=localhost;port=3306;database=everlastingblog;userid=root;password=warKrawT228787898787899;";
-                var newConnection = new MySqlConnection(_connectionString);
-                currentConnection = newConnection;
-                return currentConnection;
+                _propertiesFactory ??= new PropertiesFactory();
+                ConnectionString = _propertiesFactory.BuildConnectionString();
+                var newConnection = new MySqlConnection(ConnectionString);
+                _currentConnection = newConnection;
+                return _currentConnection;
             }
 
-            return currentConnection;
+            return _currentConnection;
         }
         
         
-        public MySqlConnection GetConnection(string type, string connectionString)
+        public MySqlConnection GetConnection(string type)
         {
             switch (type)
             {
                 case "mysql":
                     try
                     {
-                        if (currentConnection == null)
+                        if (_currentConnection == null)
                         {
-                            var newConnection = new MySqlConnection(connectionString);
-                            currentConnection = newConnection;
-                            return currentConnection;
+                            _propertiesFactory ??= new PropertiesFactory();
+                            var newConnection = new MySqlConnection(_propertiesFactory.BuildConnectionString());
+                            _currentConnection = newConnection;
+                            return _currentConnection;
                         }
-                        return currentConnection;
+                        return _currentConnection;
                     }
                     catch
                     {
@@ -46,7 +48,7 @@ namespace WebApplication
                     break;
 */
             }
-            return currentConnection;
+            return _currentConnection;
         }
     }
     

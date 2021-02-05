@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using MySql.Data.MySqlClient;
+using WebApplication.Factories;
 using WebApplication.Models;
 
 namespace WebApplication.Controllers
@@ -16,10 +17,10 @@ namespace WebApplication.Controllers
         [HttpGet] //api/Manage
         public IEnumerable<string> Get()
         {
-            var mysqlconnection = connectionFactory.GetConnection();
+            connectionFactory.GetConnection();
             MySqlCommand sqlCommand = new MySqlCommand();
             sqlCommand.CommandText = "SELECT  FROM author";
-            return new string[] {"value1", "value2"};
+            return new[] {"value1", "value2"};
             
         }
         
@@ -57,12 +58,12 @@ namespace WebApplication.Controllers
         {
  
             Author author = new Author();
-            author.id = 958;
-            author.first_name = name;
-            author.last_name = name+"Koval";
-            author.email = name+"newemail";
-            author.password = name+"newpassword";
-            author.username = name+"newusername";
+            author.Id = 958;
+            author.FirstName = name;
+            author.LastName = name+"Koval";
+            author.Email = name+"newemail";
+            author.Password = name+"newpassword";
+            author.Username = name+"newusername";
 
             //using ADO.NET technology - Status OK
             
@@ -71,7 +72,7 @@ namespace WebApplication.Controllers
             MySqlCommand sqlCommand = new MySqlCommand();
             sqlCommand.Connection = mySqlConnection;
            
-           sqlCommand.CommandText = $"insert into author values ('{0}','{1}')";
+           //sqlCommand.CommandText = "insert into author values ('{0}','{1}')";
            sqlCommand.CommandText = "INSERT INTO author VALUES ('')";
            try
             {
