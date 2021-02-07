@@ -1,15 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using Microsoft.AspNetCore.Http;
 using MySql.Data.MySqlClient;
 using WebApplication.Factories;
 using WebApplication.Models;
+
 
 namespace WebApplication.Repository
 {
     public class CommentsRepository
     {
+        public void InsertComment(Comment comment)
+        {
+            var mySqlConnection = _factory.GetConnection();
+            var commandText =
+                $"insert into everlastingcomments.comment values(null, '{comment.Content}', '{comment.AuthorName}' , '{comment.AuthorEmail}' , 1, null);";
+            MySqlCommand sqlCommand = new MySqlCommand(commandText, mySqlConnection);
+            
+            try
+            {
+                mySqlConnection.Open();
+                sqlCommand.ExecuteNonQuery();
+                
+            }
+            
+            finally
+            {
+                mySqlConnection.Close();
+            }
+        }
+
         private DbFactory _factory = new DbFactory();
+
         public List<Comment> FindCommentsByArticleId(int articleId)
         {
             var commentsList = new List<Comment>();
@@ -18,7 +41,7 @@ namespace WebApplication.Repository
             {
                 connection.Open();
                 string sqlQuery =
-                    "select id,content,author_name,author_email,created_at from everlastingcomments.comment where article_id=" +
+                    $"select id,content,author_name,author_email,created_at from everlastingcomments.comment where article_id="+
                     articleId;
 
                 MySqlCommand sqlCommand = new MySqlCommand(sqlQuery, connection);
@@ -53,10 +76,7 @@ namespace WebApplication.Repository
             {
                 connection.Close();
             }
-            
             return commentsList;
         }
-
-        
     }
 }

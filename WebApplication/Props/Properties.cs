@@ -1,6 +1,6 @@
 ﻿namespace WebApplication.Props
 {
-    public class Properties
+    public class Properties: IPropertiesSettings
     {
         //_connectionString = @"server=localhost;port=3306;database=everlastingblog;userid=root;password=warKrawT228787898787899;";
         public string Server { get; set; }
@@ -24,6 +24,15 @@
 
         
         
+    }
+    
+    public interface IPropertiesSettings
+    {
+         string Server { get; set; }
+         string Port { get; set; }
+         string Database { get; set; }
+         string Userid { get; set; }
+         string Password { get; set; }
     }
     
     

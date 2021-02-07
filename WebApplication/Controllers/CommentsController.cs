@@ -1,9 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
+using System.Net.Http;
+using System.Net.Mime;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MySql.Data.MySqlClient;
+using Renci.SshNet.Messages.Authentication;
 using WebApplication.Factories;
 using WebApplication.Models;
+using WebApplication.Repository;
+using WebApplication.Validation;
 
 namespace WebApplication.Controllers
 {
@@ -13,12 +21,13 @@ namespace WebApplication.Controllers
     {
         
         private static DbFactory connectionFactory = new DbFactory();
-        private static List<Comment> commentsList = new List<Comment>();
         
+        private static CommentsRepository _commentsRepository = new CommentsRepository();
         
         [HttpGet] //api/Comments
         public ActionResult<List<Comment>> GetAll()
         {
+            var commentsList = new List<Comment>();
             commentsList.Clear();
             var mysqlconnection = connectionFactory.GetConnection();
 
@@ -26,7 +35,7 @@ namespace WebApplication.Controllers
             {
                 mysqlconnection.Open();
                 string sqlQuery =
-                    "select id,content, author_name, author_email,created_at from everlastingcomments.comment;";
+                    "select id,content, author_name, author_email,article_id,created_at from everlastingcomments.comment;";
                 MySqlCommand sqlCommand = new MySqlCommand(sqlQuery, mysqlconnection);
 
                 MySqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
@@ -40,7 +49,8 @@ namespace WebApplication.Controllers
                             Content = sqlDataReader.GetString(1),
                             AuthorName = sqlDataReader.GetString(2),
                             AuthorEmail = sqlDataReader.GetString(3),
-                            CreatedAt = sqlDataReader.GetDateTime(4)
+                            ArticleId = sqlDataReader.GetInt32(4),
+                            CreatedAt = sqlDataReader.GetDateTime(5)
                         };
                         commentsList.Add(item);
                     }
@@ -61,15 +71,20 @@ namespace WebApplication.Controllers
         }
         
         [HttpGet("{article_id}")] //api/Comments/{id}
-        public ActionResult<Comment> GetCommentById(int articleId)
+        public ActionResult<List<Comment>> GetCommentById(int article_id)
         {
-            var item = new Comment();
-            //var searchResult = _comment.ReturnComment();
-            connectionFactory.GetConnection();
+            try
+            {
+                var commentsList = new List<Comment>();
+                commentsList = _commentsRepository.FindCommentsByArticleId(article_id);
+
+                return commentsList;
+            }
+            finally
+            {
+                BadRequest();
+            }
             
-            //todo
-            
-            return item;
         }
 
         #region GoodGetIdRequest
@@ -121,40 +136,23 @@ namespace WebApplication.Controllers
         #endregion
 
         [HttpPost]
-        public void Post([FromBody]string name)
+        [Consumes(MediaTypeNames.Application.Json)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult PostWriteComment(Comment comment)
         {
- 
-            Author author = new Author();
-            author.Id = 958;
-            author.FirstName = name;
-            author.LastName = name+"Koval";
-            author.Email = name+"newemail";
-            author.Password = name+"newpassword";
-            author.Username = name+"newusername";
-
-            //using ADO.NET technology - Status OK
-            
-            var mySqlConnection = connectionFactory.GetConnection();
-            //var sqlExpression = "INSERT INTO  author VALUES (@id)";
-            MySqlCommand sqlCommand = new MySqlCommand();
-            sqlCommand.Connection = mySqlConnection;
-           
-           //sqlCommand.CommandText = "insert into author values ('{0}','{1}')";
-           sqlCommand.CommandText = "insert into everlastingcomments.comment values(null, 'breaking news', 'Jonny', 'jonny1@gmail.com', 1, null);";
-           try
+            Checker requestvalidator = new Checker();
+            var responseMessage = requestvalidator.IsValid(comment);
+            if (responseMessage.IsSuccessStatusCode)
             {
-                mySqlConnection.Open();
-                sqlCommand.ExecuteNonQuery();
-                Console.WriteLine(sqlCommand.ToString());
-                mySqlConnection.Close();
+                _commentsRepository.InsertComment(comment);
+                return CreatedAtAction(nameof(GetCommentById), new { article_id = comment.ArticleId }, comment);
             }
-            catch (Exception ex)
+            else
             {
-                Console.WriteLine(ex.Message);
+                return BadRequest();
             }
-        } 
-        
-        
+        }
 
         // [HttpPut]
         // public void Update(string tmp)
