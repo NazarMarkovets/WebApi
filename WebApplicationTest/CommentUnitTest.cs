@@ -18,7 +18,7 @@ namespace WebApplicationTest
         //private CommentsRepository _commentRepository;
         private DbFactory _dbFactory = new();
         private PropertiesFactory _propertiesFactory;
-        
+        private bool hadRows = false;
         [TestInitialize]
         public void TestInitialization()
         {
@@ -26,6 +26,7 @@ namespace WebApplicationTest
             //_properties = new Properties();
             _dbFactory = new DbFactory();
             _propertiesFactory = new PropertiesFactory();
+            
         }
 
         [TestMethod("Check status from connection factory. IS it closed?")]
@@ -111,16 +112,15 @@ namespace WebApplicationTest
             sqlDataReader.Close();
             if (!hasRows)
             {
-                
-                bool isRead = InsertRow(query);
-                Assert.IsTrue(isRead,"successfully read after inserted operations");
+                InsertRow();
+                Assert.IsTrue(hadRows,"successfully read after inserted operations");
             }
             connect.Close();
             Assert.IsTrue(true,"successfully read");
         }
 
         [TestMethod("Insert Row to database")]
-        public bool InsertRow(string ReadQuery)
+        public void InsertRow()
         {
             var connection = _dbFactory.GetConnection();
             connection.Open();
@@ -130,14 +130,14 @@ namespace WebApplicationTest
             command.Transaction = transaction;
             command.CommandText = "insert into everlastingcomments.comment " +
                                          "values(null, 'test', 'test','al.com', 1, null);";
-            command.CommandText += ReadQuery;
+            command.CommandText += "select id,content, author_name, author_email,article_id,created_at from everlastingcomments.comment ";
             var reader = command.ExecuteReader();
-            bool hadRows = reader.HasRows;
+            hadRows = reader.HasRows;
+            Assert.IsTrue(hadRows);
             reader.Close();
             transaction.Rollback();
             connection.Close();
             
-            return hadRows;
         }
     }
 }
