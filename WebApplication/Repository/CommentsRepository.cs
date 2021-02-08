@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq.Expressions;
 using Microsoft.AspNetCore.Http;
 using MySql.Data.MySqlClient;
 using WebApplication.Factories;
@@ -12,23 +13,19 @@ namespace WebApplication.Repository
     public class CommentsRepository
     {
         public void InsertComment(Comment comment)
-        {
-            var mySqlConnection = _factory.GetConnection();
+        { 
             var commandText =
                 $"insert into everlastingcomments.comment values(null, '{comment.Content}', '{comment.AuthorName}' , '{comment.AuthorEmail}' , 1, null);";
-            MySqlCommand sqlCommand = new MySqlCommand(commandText, mySqlConnection);
+            MySqlCommand sqlCommand = new MySqlCommand(commandText);
+            ExecuteDataUpdatingTypeComment(sqlCommand);
+        }
+
+        public void DeleteComment(int id)
+        {
             
-            try
-            {
-                mySqlConnection.Open();
-                sqlCommand.ExecuteNonQuery();
-                
-            }
-            
-            finally
-            {
-                mySqlConnection.Close();
-            }
+            var commandText = $"DELETE FROM everlastingcomments.comment where id = {id};";
+            MySqlCommand cmd = new MySqlCommand(commandText);
+            ExecuteDataUpdatingTypeComment(cmd);
         }
 
         private DbFactory _factory = new DbFactory();
@@ -41,7 +38,7 @@ namespace WebApplication.Repository
             {
                 connection.Open();
                 string sqlQuery =
-                    $"select id,content,author_name,author_email,created_at from everlastingcomments.comment where article_id="+
+                    $"select id,content,author_name,author_email,created_at from everlastingcomments.comment where article_id=" +
                     articleId;
 
                 MySqlCommand sqlCommand = new MySqlCommand(sqlQuery, connection);
@@ -51,7 +48,7 @@ namespace WebApplication.Repository
                 {
                     while (sqlDataReader.Read())
                     {
-                        var comment = new Comment
+                        var comment = new Comment           
                         {
                             Id = sqlDataReader.GetInt32(0),
                             Content = sqlDataReader.GetString(1),
@@ -61,16 +58,12 @@ namespace WebApplication.Repository
                             CreatedAt = sqlDataReader.GetDateTime(4)
                         };
                         commentsList.Add(comment);
-
                     }
-                    
                 }
-
             }
-            catch (DataException ex)
+            catch
             {
-                Console.WriteLine(ex);
-                return null;
+                throw new DataException("Can not execute read request. Place: FindCommentsByArticleId");
             }
             finally
             {
@@ -78,5 +71,26 @@ namespace WebApplication.Repository
             }
             return commentsList;
         }
+
+        public void ExecuteDataUpdatingTypeComment(MySqlCommand command)
+        {
+            var connection = _factory.GetConnection();
+            MySqlCommand executeCmd = command;
+            executeCmd.Connection = connection;
+            try
+            {
+                connection.Open();
+                executeCmd.ExecuteNonQuery();
+            }
+            catch
+            {
+                throw new DataException($"Can not execute. Exception in ExecuteDataUpdatingTypeComment");
+            }
+            finally
+            {
+                connection.Close();
+            }
+        }
     }
+    
 }

@@ -20,64 +20,17 @@ namespace WebApplication.Controllers
     public class CommentsController : ControllerBase
     {
         
-        private static DbFactory connectionFactory = new DbFactory();
-        
         private static CommentsRepository _commentsRepository = new CommentsRepository();
         
-        [HttpGet] //api/Comments
-        public ActionResult<List<Comment>> GetAll()
-        {
-            var commentsList = new List<Comment>();
-            commentsList.Clear();
-            var mysqlconnection = connectionFactory.GetConnection();
-
-            try
-            {
-                mysqlconnection.Open();
-                string sqlQuery =
-                    "select id,content, author_name, author_email,article_id,created_at from everlastingcomments.comment;";
-                MySqlCommand sqlCommand = new MySqlCommand(sqlQuery, mysqlconnection);
-
-                MySqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
-                if (sqlDataReader.HasRows)
-                {
-                    while (sqlDataReader.Read())
-                    {
-                        var item = new Comment
-                        {
-                            Id = sqlDataReader.GetInt32(0),
-                            Content = sqlDataReader.GetString(1),
-                            AuthorName = sqlDataReader.GetString(2),
-                            AuthorEmail = sqlDataReader.GetString(3),
-                            ArticleId = sqlDataReader.GetInt32(4),
-                            CreatedAt = sqlDataReader.GetDateTime(5)
-                        };
-                        commentsList.Add(item);
-                    }
-
-                }
-
-            }
-            catch
-            {
-                return BadRequest();
-            }
-            finally
-            {
-                    mysqlconnection.Close();
-            }
-            
-            return commentsList;
-        }
+        
         
         [HttpGet("{article_id}")] //api/Comments/{id}
-        public ActionResult<List<Comment>> GetCommentById(int article_id)
+        public ActionResult<List<Comment>> GetCommentsById(int article_id)
         {
             try
             {
                 var commentsList = new List<Comment>();
                 commentsList = _commentsRepository.FindCommentsByArticleId(article_id);
-
                 return commentsList;
             }
             finally
@@ -86,54 +39,7 @@ namespace WebApplication.Controllers
             }
             
         }
-
-        #region GoodGetIdRequest
-
-        /*
-        [Microsoft.AspNetCore.Mvc.HttpGet("{article_id}")] //api/Comments/{id}
-        public ActionResult<List<Comment>> GetCommentById(int article_id)
-        {   
-            
-            //Попробовать с объектом
-            commentsList.Clear();
-            var mysqlconnection = connectionFactory.GetConnection();
-
-            try
-            {
-                mysqlconnection.Open();
-                string sqlQuery =
-                    "select id,content,author_name,author_email,created_at from everlastingcomments.comment where article_id="+article_id;
-
-                MySqlCommand sqlCommand = new MySqlCommand(sqlQuery, mysqlconnection);
-
-                MySqlDataReader sqlDataReader = sqlCommand.ExecuteReader();
-                if (sqlDataReader.HasRows)
-                {
-                    while (sqlDataReader.Read())
-                    {
-                        var item = new Comment
-                        {
-                            Id = sqlDataReader.GetInt32(0),
-                            Content = sqlDataReader.GetString(1),
-                            AuthorName = sqlDataReader.GetString(2),
-                            AuthorEmail = sqlDataReader.GetString(3),
-                            CreatedAt = sqlDataReader.GetDateTime(4)
-                        };
-                        commentsList.Add(item);
-                    }
-                    mysqlconnection.Close();
-                }
-
-            }
-            catch (Exception)
-            {
-                throw new DataException();
-            }
-            return commentsList;
-        }
-         */
-
-        #endregion
+        
 
         [HttpPost]
         [Consumes(MediaTypeNames.Application.Json)]
@@ -146,25 +52,31 @@ namespace WebApplication.Controllers
             if (responseMessage.IsSuccessStatusCode)
             {
                 _commentsRepository.InsertComment(comment);
-                return CreatedAtAction(nameof(GetCommentById), new { article_id = comment.ArticleId }, comment);
+                return StatusCode(201);
             }
             else
             {
-                return BadRequest();
+                return BadRequest("Can not execute insert statement. Request validator rejected the request");
             }
         }
 
-        // [HttpPut]
-        // public void Update(string tmp)
-        // {
-        //     
-        // }
-        //
-        // [HttpDelete("{id}")]
-        // public void DeleteSmth(int id)
-        // {
-        //     
-        // }
+         
+        [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult DeleteComment(int id)
+        {
+
+            try
+            {
+                _commentsRepository.DeleteComment(id);
+            }
+            catch
+            {
+                return BadRequest("Identifier is null, or has zero");
+            }
+            return NoContent();
+        }
 
     }
 }

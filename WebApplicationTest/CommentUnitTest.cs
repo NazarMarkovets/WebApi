@@ -1,6 +1,8 @@
 using System;
+using System.Data;
 using System.IO;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using MySql.Data.MySqlClient;
 using Newtonsoft.Json;
 using WebApplication.Factories;
 using WebApplication.Props;
@@ -103,27 +105,39 @@ namespace WebApplicationTest
             const string query = "select id,content, author_name, author_email,article_id,created_at from everlastingcomments.comment";
             var command = new MySqlCommand(query, connect);
             var sqlDataReader = command.ExecuteReader();
-            if (!sqlDataReader.HasRows)//if there are no rows
+            bool hasRows = sqlDataReader.HasRows;
+            connect.Close();
+            connect.Dispose();
+            sqlDataReader.Close();
+            if (!hasRows)
             {
-                sqlDataReader.Close();
-                connect.Close();
-                connect.Open();
-                var sqlTransaction = connect.BeginTransaction();
-                var sqlCommand = connect.CreateCommand();
-                sqlCommand.Transaction = sqlTransaction;
-                sqlCommand.CommandText = "insert into" +
-                                         " everlastingcomments.comment " +
-                                         "values(null, 'breaking news', 'Jonny', " +
-                                         "concat(lpad(conv(floor(rand()*pow(36,8)), 10, 36), 8, 0),'gmail.com'), 1, null);";
+                
+                bool isRead = InsertRow(query);
+                Assert.IsTrue(isRead,"successfully read after inserted operations");
+            }
+            connect.Close();
+            Assert.IsTrue(true,"successfully read");
+        }
 
-                sqlCommand.ExecuteNonQuery();
-                sqlTransaction.Rollback();
-                connect.Close();
-            }
-            else
-            {
-                Assert.IsTrue(true);
-            }
+        [TestMethod("Insert Row to database")]
+        public bool InsertRow(string ReadQuery)
+        {
+            var connection = _dbFactory.GetConnection();
+            connection.Open();
+            
+            var transaction = connection.BeginTransaction();
+            MySqlCommand command = connection.CreateCommand();
+            command.Transaction = transaction;
+            command.CommandText = "insert into everlastingcomments.comment " +
+                                         "values(null, 'test', 'test','al.com', 1, null);";
+            command.CommandText += ReadQuery;
+            var reader = command.ExecuteReader();
+            bool hadRows = reader.HasRows;
+            reader.Close();
+            transaction.Rollback();
+            connection.Close();
+            
+            return hadRows;
         }
     }
 }
