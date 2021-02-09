@@ -16,7 +16,7 @@ using WebApplication.Validation;
 namespace WebApplication.Controllers
 {
     [ApiController]
-    [Route("api/comments")]
+    [Route("api/[Controller]/")]
     public class CommentsController : ControllerBase
     {
         
@@ -25,17 +25,24 @@ namespace WebApplication.Controllers
         
         
         [HttpGet("{article_id}")] //api/Comments/{id}
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<List<Comment>> GetCommentsById(int article_id)
         {
             try
             {
                 var commentsList = new List<Comment>();
                 commentsList = _commentsRepository.FindCommentsByArticleId(article_id);
-                return commentsList;
+                return Ok(commentsList);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
             }
             finally
             {
-                BadRequest();
+                NotFound();
             }
             
         }
@@ -70,12 +77,13 @@ namespace WebApplication.Controllers
             try
             {
                 _commentsRepository.DeleteComment(id);
+                return NoContent();
             }
             catch
             {
                 return BadRequest("Identifier is null, or has zero");
             }
-            return NoContent();
+            
         }
 
     }
